@@ -1,0 +1,75 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEngine;
+using UnityEngine.Serialization;
+
+public class BouncingBallMovement : MonoBehaviour
+{
+    [Range(0f, 1f)]
+    public float bouncingStrength = 0.8f; // How much energy is retained per bounce
+    public float force = 10f; // Initial force
+    public Vector2 dir = new Vector2(1f, 1f); // Direction of throw (normalized internally)
+
+    private Vector2 velocity;
+    private float gravity = 9.8f;
+    private bool isMoving = false;
+
+    void Start()
+    {
+        // Don't start moving automatically, wait for input
+    }
+
+    void Update()
+    {
+        // Check for input to throw the ball
+        if (!isMoving)
+        {
+            ThrowBall();
+        }
+
+        // If the ball is moving, update its position
+        if (isMoving)
+        {
+            // Apply gravity to vertical velocity
+            velocity.y -= gravity * Time.deltaTime;
+
+            // Update position
+            Vector3 newPosition = transform.position;
+            newPosition.x += velocity.x * Time.deltaTime;
+            newPosition.y += velocity.y * Time.deltaTime;
+
+            // Check if hitting the ground
+            if (newPosition.y < 0) // Assuming ground is at y=0
+            {
+                // Bounce
+                newPosition.y = 0; // Place exactly on ground
+                velocity.y = -velocity.y * bouncingStrength; // Reverse and reduce vertical velocity
+                velocity.x *= bouncingStrength; // Reduce horizontal velocity due to friction
+
+                // Stop if bouncing is too small
+                if (Mathf.Abs(velocity.y) < 0.1f && Mathf.Abs(velocity.x) < 0.1f)
+                {
+                    isMoving = false;
+                    velocity = Vector2.zero;
+                    newPosition.y = 0;
+                }
+            }
+
+            // Apply the new position
+            transform.position = newPosition;
+        }
+    }
+
+    private void ThrowBall()
+    {
+        // Reset position if needed
+        transform.position = new Vector3(0, 1, 0);
+        
+        // Normalize direction and apply force
+        Vector2 normalizedDir = dir.normalized;
+        velocity = normalizedDir * force;
+        isMoving = true;
+    }
+}
