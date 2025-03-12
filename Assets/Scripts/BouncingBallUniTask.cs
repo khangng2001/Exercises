@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
-public class BouncingBallCoroutine : MonoBehaviour
+public class BouncingBallUniTask : MonoBehaviour
 {
     [SerializeField] private float bouncingStrength = 0.8f;
     [SerializeField] private float initialForce = 5f; //initialVelocity
@@ -16,7 +17,7 @@ public class BouncingBallCoroutine : MonoBehaviour
     private void Start()
     {
         Calculate();
-        StartCoroutine(ThrowBall());
+        ThrowBall().Forget();
     }
 
     private void Calculate()
@@ -30,7 +31,7 @@ public class BouncingBallCoroutine : MonoBehaviour
         _velocity = new Vector3(initialVelocityX, initialVelocityY, 0);
     }
     
-    private IEnumerator ThrowBall()
+    private async UniTaskVoid ThrowBall()
     {
         while (true)
         {
@@ -50,9 +51,12 @@ public class BouncingBallCoroutine : MonoBehaviour
             if (Mathf.Abs(_velocity.x) < _stoppingThreshold && Mathf.Abs(_velocity.y) < _stoppingThreshold
                                                             && transform.position.y <= _groundValue)
             {
-                yield break;
+                break;
             }
-            yield return null; // run per frame --> as yield return null pauses the execution one frame
+            await UniTask.NextFrame(); // run per frame --> as yield return null pauses the execution one frame
         }
     }
+    
+    
+    
 }

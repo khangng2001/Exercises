@@ -14,6 +14,7 @@ public class BouncingBallDot : MonoBehaviour
     private float _angleRadian;
     private readonly float _groundValue = 0.5f;
     private Vector3 _targetPosition;
+    private float _stoppingThreshold = 0.1f;
     private void Start()
     {
         Calculate();
@@ -36,7 +37,14 @@ public class BouncingBallDot : MonoBehaviour
 
     private void ThrowingAndBouncing()
     {
-         _velocity.y += Physics2D.gravity.y * Time.deltaTime;
+        if (Mathf.Abs(_velocity.x) < _stoppingThreshold && Mathf.Abs(_velocity.y) < _stoppingThreshold 
+                                                        && transform.position.y <= _groundValue)
+        {
+            _velocity = Vector3.zero;
+            transform.position = new Vector3(transform.position.x, _groundValue, 0);
+            return;
+        }
+        _velocity.y += Physics2D.gravity.y * Time.deltaTime;
         
         float newPosX = transform.position.x + _velocity.x * Time.deltaTime;
         float newPosY = transform.position.y + _velocity.y * Time.deltaTime;
@@ -47,9 +55,10 @@ public class BouncingBallDot : MonoBehaviour
         {
             _velocity.y = -_velocity.y * bouncingStrength;
             _velocity.x *= bouncingStrength; //create friction --> ball will stop eventually
+            newPosY = _groundValue;
         }
         
         _targetPosition.Set(newPosX, newPosY,0f);
-        transform.DOMove(_targetPosition, 0.05f);
+        transform.DOMove(_targetPosition, Time.deltaTime);
     }
 }

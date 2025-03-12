@@ -35,9 +35,9 @@ public class InfinityLoopMovement : MonoBehaviour
         transform.position = newPosition;
     }
     
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawCube(newPosition, 2f * Vector3.one);
-    }
+    // private void OnDrawGizmos()
+    // {
+    //     Gizmos.color = Color.red;
+    //     Gizmos.DrawCube(newPosition, 2f * Vector3.one);
+    // }
 }
