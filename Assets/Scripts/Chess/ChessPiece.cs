@@ -2,16 +2,21 @@ using System;
 using System.Collections.Generic;
 using Chess.Interfaces;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Chess
 {
     public abstract class ChessPiece : MonoBehaviour, IMovable
     {
+        [SerializeField] protected int maxHealth;
+        
         protected IBoard _board;
         protected IMovementStrategy _movementStrategy;
-        public Vector2Int Position { get; protected set; }
-        protected Vector2Int _initialPos;
+
+        public Vector2Int Position { get; private set; }
+        public int  CurrentHealth { get; private set; }
         
+        private Vector2Int _initialPos;
         public bool HasMoved { get; private set; }
 
         public virtual void Initialized(IBoard board, IMovementStrategy movementStrategy, Vector2Int initialPos)
@@ -19,7 +24,9 @@ namespace Chess
             this._board = board;
             this._movementStrategy = movementStrategy;
             this._initialPos = initialPos;
+            
             Position = _initialPos;
+            CurrentHealth = maxHealth;
             _board.RegisterChessPiece(this);
         }
         
@@ -36,13 +43,12 @@ namespace Chess
                 //if yes --> update new pos
                 Vector2Int oldPos = Position;
                 Position = newPosition;
-                HasMoved = true;
                 _board.UpdatePiecePosition(this, oldPos, newPosition);
+                HasMoved = true;
                 
                 UpdateVisualPos();
                 return true;
             }
-
             return false;
         }
 

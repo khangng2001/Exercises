@@ -716,10 +716,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerKingPrefab: {fileID: 6407708959911907039, guid: 53f47a9bda34fcc4aa8dbb95462f0042, type: 3}
-  piecesData: []
+  piecesData:
+  - chestType: 0
+    piecePrefab: {fileID: 0}
+    maxAppearance: 0
+    weight: 0
+    currentCount: 0
   maxNumPiece: 7
   occupiedPos: []
-  _chessBoard: {fileID: 0}
 --- !u!1 &1881468818
 GameObject:
   m_ObjectHideFlags: 0

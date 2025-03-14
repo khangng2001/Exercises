@@ -11,7 +11,6 @@ namespace Chess
             if (this._inputHandler != null)
             {
                 this._inputHandler.OnMoveDirection -= HandleMoveDirection;
-                Debug.Log($"hhheee");
             }
 
             this._inputHandler = inputHandler;

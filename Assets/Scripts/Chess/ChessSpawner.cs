@@ -74,7 +74,17 @@ namespace Chess
                 playerKing.Initialized(_chessBoard, new KingMovementStrategy(), _playerKingPos);
                 _playerInputHandler = GetComponentInChildren<PlayerInputHandler>();
                 playerKing.SetInputHandler(_playerInputHandler);
+                Debug.Log($"Player: {playerKing.CurrentHealth}");
             }
+        }
+
+        private void SpawnPieces(GameObject piecePrefab, Vector2Int position)
+        {
+            
+        }
+
+        private void GetAdjacent(Vector2Int currentPos)
+        {
             
         }
         
@@ -84,6 +94,7 @@ namespace Chess
 [Serializable]
 public class PiecesData
 {
+    public ChessType chestType;
     public GameObject piecePrefab;
     public int maxAppearance;
     public float weight;
