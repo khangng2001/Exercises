@@ -52,7 +52,7 @@ public class BouncingBallCoroutine : MonoBehaviour
             {
                 yield break;
             }
-            yield return null; // run per frame --> as yield return null pauses the execution one frame
+            yield return null; // run per frame --> yield return null pauses the execution one frame
         }
     }
 }

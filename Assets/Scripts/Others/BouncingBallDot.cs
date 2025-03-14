@@ -60,5 +60,9 @@ public class BouncingBallDot : MonoBehaviour
         
         _targetPosition.Set(newPosX, newPosY,0f);
         transform.DOMove(_targetPosition, Time.deltaTime);
+        
+        //In Update ball are updated with 1/60 seconds --> ~0.0167s
+        // If the timeDuration in DMove < 0.0167 --> create slower animation
+        
     }
 }
