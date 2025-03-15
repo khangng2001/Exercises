@@ -24,15 +24,27 @@ namespace Chess.ChessStrategies
            
             foreach (var direction in directions)
             {
-                for (int dir = 1; dir < 8; dir++)
+                for (int distance = 1; distance < 8; distance++)
                 {
-                    Vector2Int newPos = currentPosition + dir * direction;
-                    if (board.IsPositionValid(newPos) && !board.IsPositionOccupied(newPos))
+                    Vector2Int newPos = currentPosition + distance * direction;
+                    if (board.IsPositionValid(newPos))
                     {
-                        possibleMoves.Add(newPos);
+                        if (!board.IsPositionOccupied(newPos))
+                        {
+                            possibleMoves.Add(newPos);
+                        }
+                        else
+                        {
+                            // If we hit a piece, we can't move further in this direction
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        // If we're off the board, we can't move further in this direction
+                        break;
                     }
                 }
-                return possibleMoves;
             }
             
             return possibleMoves;

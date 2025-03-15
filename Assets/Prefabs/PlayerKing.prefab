@@ -90,7 +90,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9162b856f7dfde941ba9854206e14f5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxHealth: 10
+  maxHealth: 10
+  chessType: 5
 --- !u!1 &4676292776537451179
 GameObject:
   m_ObjectHideFlags: 0
