@@ -6,18 +6,23 @@ using UnityEngine.Serialization;
 
 namespace Chess
 {
-    public abstract class ChessPiece : MonoBehaviour, IMovable
+    public abstract class ChessPiece : MonoBehaviour, IMovable, IDamageable
     {
         [SerializeField] protected int maxHealth;
         
         protected IBoard _board;
         protected IMovementStrategy _movementStrategy;
-
+        
         public Vector2Int Position { get; private set; }
         public int  CurrentHealth { get; private set; }
-        
+
         private Vector2Int _initialPos;
         public bool HasMoved { get; private set; }
+
+        [SerializeField] private ChessType chessType;
+        public ChessType ChessType => chessType;
+
+        public event Action<ChessPiece> OnPieceDestroyed; 
 
         public virtual void Initialized(IBoard board, IMovementStrategy movementStrategy, Vector2Int initialPos)
         {
@@ -60,6 +65,23 @@ namespace Chess
         private void UpdateVisualPos()
         {
             transform.position = new Vector3(Position.x, 0.125f, Position.y);
+        }
+        
+        public bool TakeDamage(int damageAmount)
+        {
+            CurrentHealth -= damageAmount;
+            if (CurrentHealth < 0)
+            {
+                Die();
+                return true;
+            }
+            return false;
+        }
+
+        protected virtual void Die()
+        {
+            OnPieceDestroyed?.Invoke(this);
+            Destroy(gameObject);
         }
     }
 }

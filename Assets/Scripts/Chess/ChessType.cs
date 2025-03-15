@@ -6,6 +6,7 @@ namespace Chess
         Knight,
         Queen,
         Rook,
-        Bishop
+        Bishop,
+        King
     }
 }

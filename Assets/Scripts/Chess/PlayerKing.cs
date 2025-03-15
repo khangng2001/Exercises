@@ -14,7 +14,7 @@ namespace Chess
             }
 
             this._inputHandler = inputHandler;
-            this._inputHandler.OnMoveDirection += HandleMoveDirection;
+            EnableInput();
         }
 
         private void HandleMoveDirection(Vector2Int dir)
@@ -24,6 +24,22 @@ namespace Chess
         }
         
         private void OnDestroy()
+        {
+            if (_inputHandler != null)
+            {
+               DisableInput();
+            }
+        }
+
+        private void EnableInput()
+        {
+            if (_inputHandler != null)
+            {
+                _inputHandler.OnMoveDirection += HandleMoveDirection;
+            }
+        }
+
+        public void DisableInput()
         {
             if (_inputHandler != null)
             {

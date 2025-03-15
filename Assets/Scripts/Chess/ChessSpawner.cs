@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Chess;
 using Chess.ChessStrategies;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace Chess
@@ -13,12 +14,10 @@ namespace Chess
         [SerializeField] private PlayerKing playerKingPrefab;
         [SerializeField] private List<PiecesData> piecesData = new List<PiecesData>();
         [SerializeField] private int maxNumPiece = 7;
-        [SerializeField] private List<Vector2Int> occupiedPos = new List<Vector2Int>();
         private Vector2Int _playerKingPos;
         
         private ChessBoard _chessBoard;
         private PlayerInputHandler _playerInputHandler;
-        
         private void Awake()
         {
             _chessBoard = FindObjectOfType<ChessBoard>();
@@ -27,27 +26,30 @@ namespace Chess
         private void Start()
         {
             SpawnPlayerKing();
+            SpawnEnemy();
         }
 
-        public GameObject GetRandomPiece()
+        private PiecesData GetRandomPiece()
         {
             float totalWeight = 0;
+            float accumlateWeight = 0;
             foreach (var pieces in piecesData)
             {
                 totalWeight += pieces.weight;
             }
+
+            if (totalWeight <= 0) return default;
             float randomValue = Random.Range(0, totalWeight);
-            float accumlatedWeight = 0;
            foreach (var piece in piecesData)
            {
-               accumlatedWeight += piece.weight;
-               if (randomValue < accumlatedWeight && piece.currentCount < piece.maxAppearance)
+               accumlateWeight += piece.weight;
+               if (randomValue < accumlateWeight && piece.currentAppearance < piece.maxAppearance)
                {
-                   piece.maxAppearance++;
-                   return piece.piecePrefab;
+                   piece.currentAppearance++;
+                   return piece;
                }
            }
-           return null;
+           return default;
         }
 
         private Vector2Int GetRandomKingPos()
@@ -60,9 +62,25 @@ namespace Chess
             return new Vector3(currentPos.x, 0.125f, currentPos.y);
         }
 
+        //No chess in tile and tile not out of bound
         private bool IsPositionAvailable(Vector2Int pos)
         {
             return !_chessBoard.IsPositionOccupied(pos) && _chessBoard.IsPositionValid(pos);
+        }
+        
+        //tile next to king ?
+        private bool IsAdjacentToKing(Vector2Int currentPos)
+        {
+            for (int i = -1; i <= 1; i++)
+            {
+                for (int j = -1; j <= 1; j++)
+                {
+                    Vector2Int adjacentPos = new Vector2Int(currentPos.x + i, currentPos.y + j);
+                    if(adjacentPos == _playerKingPos)
+                        return true;
+                }
+            }
+            return false;
         }
 
         private void SpawnPlayerKing()
@@ -71,21 +89,44 @@ namespace Chess
             PlayerKing playerKing = Instantiate(playerKingPrefab, GetWorldPos(_playerKingPos), Quaternion.identity, this.transform);
             if (playerKing)
             {
-                playerKing.Initialized(_chessBoard, new KingMovementStrategy(), _playerKingPos);
+                playerKing.Initialized(_chessBoard, MovementStrategyFactory.Instance.GetMovementStrategy(ChessType.King), _playerKingPos);
                 _playerInputHandler = GetComponentInChildren<PlayerInputHandler>();
                 playerKing.SetInputHandler(_playerInputHandler);
-                Debug.Log($"Player: {playerKing.CurrentHealth}");
             }
         }
 
-        private void SpawnPieces(GameObject piecePrefab, Vector2Int position)
+        private void SpawnPieces(AIPieces piecePrefab, Vector2Int position)
         {
-            
+            /*if (!IsPositionAvailable(position) || IsAdjacentToKing(position))
+            {
+                return;
+            }*/
+            AIPieces aiPieces = Instantiate(piecePrefab, GetWorldPos(position), Quaternion.identity, this.transform);
+            if (aiPieces)
+            {
+                aiPieces.Initialized(_chessBoard, MovementStrategyFactory.Instance.GetMovementStrategy(piecePrefab.ChessType), position);
+            }
         }
 
-        private void GetAdjacent(Vector2Int currentPos)
+        private void SpawnEnemy()
         {
-            
+            int attempts = 0;
+            int maxAttempt = 1000;
+            int currentSpawnNum = 0;
+            while (currentSpawnNum < maxNumPiece && attempts < maxAttempt)
+            {
+                Vector2Int randomPos = new Vector2Int(Random.Range(0, 8), Random.Range(0, 8));
+                if (IsPositionAvailable(randomPos) && !IsAdjacentToKing(randomPos))
+                {
+                    PiecesData randomPiece = GetRandomPiece();
+                    if (randomPiece != null && randomPiece.piecePrefab != null)
+                    {
+                        SpawnPieces(randomPiece.piecePrefab, randomPos);
+                        currentSpawnNum++;
+                    }
+                    attempts++;
+                }
+            }
         }
         
     }
@@ -94,9 +135,8 @@ namespace Chess
 [Serializable]
 public class PiecesData
 {
-    public ChessType chestType;
-    public GameObject piecePrefab;
+    public AIPieces piecePrefab;
     public int maxAppearance;
     public float weight;
-    [HideInInspector] public int currentCount;
+    [HideInInspector] public int currentAppearance;
 }
