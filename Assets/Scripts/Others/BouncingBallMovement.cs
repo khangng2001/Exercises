@@ -36,9 +36,8 @@ public class BouncingBallMovement : MonoBehaviour
         float velocityX = initialForce * Mathf.Cos(_angleRadian);
         float velocityY = initialForce * Mathf.Sin(_angleRadian);
         
-        //_velocity = new Vector3(velocityX, velocityY, 0);
+        _velocity = new Vector3(velocityX, velocityY, 0);
         
-        transform.position = new Vector3(velocityX, velocityY);
     }
     
     private void ThrowAndBouncing()

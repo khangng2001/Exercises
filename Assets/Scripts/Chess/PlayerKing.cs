@@ -1,4 +1,5 @@
 using System;
+using Chess.Interfaces;
 using UnityEngine;
 
 namespace Chess
@@ -13,8 +14,8 @@ namespace Chess
             {
                 this._inputHandler.OnMoveDirection -= HandleMoveDirection;
             }
-
             this._inputHandler = inputHandler;
+            OnEnemyDefeated += HandleEnemyDefeated;
             EnableInput();
         }
 
@@ -36,6 +37,10 @@ namespace Chess
             //     }
             // }
             AttemptMove(targetPos);
+            if (TurnManager.Instance && TurnManager.Instance.GetRemainingEnemyCount() == 0)
+            {
+                Debug.Log("<color=green>[PLAYER KING] Defeated the last enemy! Victory!</color>");
+            }
             
         }
         
@@ -44,8 +49,16 @@ namespace Chess
             if (_inputHandler != null)
             {
                DisableInput();
+               OnEnemyDefeated -= HandleEnemyDefeated;
             }
         }
+
+        private void HandleEnemyDefeated(ChessPiece attacker, IDamageable defeated)
+        {
+            if(defeated is ChessPiece chessPiece)
+                Debug.Log($"<color=blue>[PLAYER KING] Defeated enemy: {chessPiece.ChessType}</color>");
+        }
+
 
         public void EnableInput()
         {

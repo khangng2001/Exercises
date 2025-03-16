@@ -32,5 +32,15 @@ namespace Chess.ChessStrategies
             }
             return possibleMoves;
         }
+        
+        public bool CanAttackPosition(Vector2Int currentPosition, Vector2Int targetPosition, IBoard board)
+        {
+            // Knights have L-shaped moves and can jump over pieces
+            int dx = Mathf.Abs(targetPosition.x - currentPosition.x);
+            int dy = Mathf.Abs(targetPosition.y - currentPosition.y);
+            
+            // Knight can attack if the target is in an L-shape pattern (2,1) or (1,2)
+            return (dx == 1 && dy == 2) || (dx == 2 && dy == 1);
+        }        
     }
 }

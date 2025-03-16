@@ -11,7 +11,7 @@ namespace Chess
 
         [SerializeField] private float moveDelay = 0.5f;
         
-       [SerializeField] public TurnState CurrentTurn { get; private set; }
+       [SerializeField] private TurnState CurrentTurn { get; set; }
 
        [SerializeField] private PlayerKing _playerKing;
 
@@ -27,6 +27,7 @@ namespace Chess
             
             Instance = this;
             CurrentTurn = TurnState.PlayerTurn;
+            Debug.Log("<color=cyan>[TURN] Game started. Current turn: Player</color>");
         }
 
         private void Start()
@@ -38,6 +39,11 @@ namespace Chess
             }
             UpdateAIPiecesList();
         }
+        
+        public int GetRemainingEnemyCount()
+        {
+            return _aiPieces.Count;
+        }   
 
         private void UpdateAIPiecesList()
         {
@@ -55,7 +61,7 @@ namespace Chess
             _aiPieces.Remove(piece as AIPieces);
 
             if (_aiPieces.Count != 0) return;
-            Debug.Log("All enemies defeated! Player wins!");
+            Debug.Log($"<color=cyan>[TURN] AI piece destroyed. Remaining: {_aiPieces.Count}</color>");
             CurrentTurn = TurnState.GameOver;
         }
 
@@ -70,6 +76,7 @@ namespace Chess
         private void StartEnemyTurn()
         {
             CurrentTurn = TurnState.EnemyTurn;
+            Debug.Log($"<color=yellow>[TURN] Current turn: Enemy</color>");
             _playerKing.DisableInput();
             StartCoroutine(ProcessEnemyTurns());
         }
@@ -102,6 +109,7 @@ namespace Chess
         private void StartPlayerTurn()
         {
             CurrentTurn = TurnState.PlayerTurn;
+            Debug.Log($"<color=cyan>[TURN] Current turn: Player</color>");
             _playerKing.EnableInput();
         }
     }

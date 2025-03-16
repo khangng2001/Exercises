@@ -48,5 +48,33 @@ namespace Chess.ChessStrategies
             
             return possibleMoves;
         }
+        
+        public bool CanAttackPosition(Vector2Int currentPosition, Vector2Int targetPosition, IBoard board)
+        {
+           
+            int dx = Mathf.Abs(targetPosition.x - currentPosition.x);
+            int dy = Mathf.Abs(targetPosition.y - currentPosition.y);
+            
+           
+            if (dx != dy)
+                return false;
+                
+            
+            Vector2Int direction = new Vector2Int(
+                (targetPosition.x - currentPosition.x) / dx,
+                (targetPosition.y - currentPosition.y) / dy
+            );
+            
+            Vector2Int checkPos = currentPosition + direction;
+            while (checkPos != targetPosition)
+            {
+                if (board.IsPositionOccupied(checkPos))
+                    return false; 
+                checkPos += direction;
+            }
+            
+            return true; 
+        }
+        
     }
 }

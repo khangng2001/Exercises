@@ -27,5 +27,16 @@ namespace Chess.ChessStrategies
             }
             return possibleMoves;
         }
+        
+        public bool CanAttackPosition(Vector2Int currentPosition, Vector2Int targetPosition, IBoard board)
+        {
+            // Kings attack one square in any direction
+            int dx = Mathf.Abs(targetPosition.x - currentPosition.x);
+            int dy = Mathf.Abs(targetPosition.y - currentPosition.y);
+            
+            // King can attack if target is one square away in any direction
+            return dx <= 1 && dy <= 1 && !(dx == 0 && dy == 0);
+        }
+        
     }
 }

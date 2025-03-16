@@ -19,5 +19,15 @@ namespace Chess.ChessStrategies
             
             return possibleMoves;
         }
+        
+        public bool CanAttackPosition(Vector2Int currentPosition, Vector2Int targetPosition, IBoard board)
+        {
+            // Pawns attack diagonally forward
+            int forwardDir = 1; // Assuming AI pawns move upward
+            
+            // Check if target is one square diagonally forward
+            return (targetPosition.y - currentPosition.y) == forwardDir && 
+                   Mathf.Abs(targetPosition.x - currentPosition.x) == 1;
+        }
     }
 }

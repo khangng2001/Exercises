@@ -24,6 +24,8 @@ namespace Chess
 
         public event Action<ChessPiece> OnPieceDestroyed;
         public event Action<ChessPiece> OnPieceMoved; 
+        
+        public event Action<ChessPiece, IDamageable> OnEnemyDefeated;
 
         public virtual void Initialized(IBoard board, IMovementStrategy movementStrategy, Vector2Int initialPos)
         {
@@ -92,11 +94,11 @@ namespace Chess
         {
             CurrentHealth -= damageAmount;
             // Add this detailed debug log to see which piece is taking damage
-            Debug.Log($"[COMBAT] {gameObject.name} ({ChessType}) took {damageAmount} damage! Health: {CurrentHealth}/{maxHealth}");
+            Debug.Log($"({ChessType}) took {damageAmount} damage! Health: {CurrentHealth}/{maxHealth}");
             
             if (CurrentHealth <= 0)
             {
-                Debug.Log($"[COMBAT] {gameObject.name} ({ChessType}) was defeated!");
+                Debug.Log($"({ChessType}) was defeated!");
                 _board.RemoveChessPiece(Position);
                 Die();
                 return true; 
@@ -109,11 +111,19 @@ namespace Chess
             OnPieceMoved?.Invoke(this);
             if (target is ChessPiece targetPiece)
             {
-                Debug.Log($"[COMBAT] {gameObject.name} ({ChessType}) attacking {targetPiece.gameObject.name} ({targetPiece.ChessType}) at position {targetPiece.Position}");
+                Debug.Log($"({ChessType}) attacking ({targetPiece.ChessType}) at position {targetPiece.Position}");
             }
             
             bool defeated = target?.TakeDamage(damage) ?? false;
-    
+
+            if (defeated)
+            {
+                OnEnemyDefeated?.Invoke(this, target);
+                if (this is PlayerKing && TurnManager.Instance != null && TurnManager.Instance.GetRemainingEnemyCount() == 0)
+                {
+                    Debug.Log("<color=green>[COMBAT] Player defeated the last enemy! VICTORY!</color>");
+                }
+            }
             // Add result of attack
             // Debug.Log($"[COMBAT] Attack result: {(defeated ? "Enemy defeated!" : "Enemy survived!")}");
     
