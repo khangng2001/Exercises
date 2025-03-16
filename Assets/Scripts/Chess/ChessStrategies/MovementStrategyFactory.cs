@@ -30,7 +30,7 @@ namespace Chess.ChessStrategies
             _movementStrategies[ChessType.Queen] = new QueenMovementStrategy();
             _movementStrategies[ChessType.Rook] = new RookMovementStrategy();
             _movementStrategies[ChessType.Bishop] = new BishopMovementStrategy();
-            _movementStrategies[ChessType.King] = new KingMovementStrategy();
+             _movementStrategies[ChessType.King] = new KingMovementStrategy();
         }
 
         public IMovementStrategy GetMovementStrategy(ChessType chessType)

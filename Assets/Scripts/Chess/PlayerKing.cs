@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Chess
@@ -20,7 +21,22 @@ namespace Chess
         private void HandleMoveDirection(Vector2Int dir)
         {
             Vector2Int targetPos = Position + dir;
+            // if(!_board.IsPositionValid(targetPos)) return;
+            // if (_board.IsPositionOccupied(targetPos))
+            // {
+            //     IMovable enemy = _board.GetPieceAtPosition(targetPos);
+            //     if (enemy is ChessPiece chessPiece)
+            //     {
+            //         bool defeated = chessPiece.TakeDamage(1);
+            //         if (defeated)
+            //         {
+            //             AttemptMove(targetPos);
+            //         }
+            //         return;
+            //     }
+            // }
             AttemptMove(targetPos);
+            
         }
         
         private void OnDestroy()
@@ -31,7 +47,7 @@ namespace Chess
             }
         }
 
-        private void EnableInput()
+        public void EnableInput()
         {
             if (_inputHandler != null)
             {

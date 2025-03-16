@@ -31,13 +31,14 @@ public class BouncingBallMovement : MonoBehaviour
         _angleRadian = desiredAngle * Mathf.Deg2Rad;
         
         //Calculate initialVelocity X and Y using in projectile motion formula 
-        //Vx = v0 * Cos(angle)
-        //Vy = v0 * Sin(angle)
+        //Vx = v0 * Cos(angleRadian)
+        //Vy = v0 * Sin(angleRadian)
         float velocityX = initialForce * Mathf.Cos(_angleRadian);
         float velocityY = initialForce * Mathf.Sin(_angleRadian);
         
-        _velocity = new Vector3(velocityX, velocityY, 0);
+        //_velocity = new Vector3(velocityX, velocityY, 0);
         
+        transform.position = new Vector3(velocityX, velocityY);
     }
     
     private void ThrowAndBouncing()
@@ -50,7 +51,7 @@ public class BouncingBallMovement : MonoBehaviour
             return;
         }
 
-        //Calculate Y-velocity
+        //Calculate Y-velocity 
         _velocity.y += Physics2D.gravity.y * Time.deltaTime;
         float newPosX = transform.position.x + _velocity.x * Time.deltaTime;
         float newPosY = transform.position.y + _velocity.y * Time.deltaTime;

@@ -22,7 +22,8 @@ namespace Chess
         [SerializeField] private ChessType chessType;
         public ChessType ChessType => chessType;
 
-        public event Action<ChessPiece> OnPieceDestroyed; 
+        public event Action<ChessPiece> OnPieceDestroyed;
+        public event Action<ChessPiece> OnPieceMoved; 
 
         public virtual void Initialized(IBoard board, IMovementStrategy movementStrategy, Vector2Int initialPos)
         {
@@ -50,9 +51,29 @@ namespace Chess
                 Position = newPosition;
                 _board.UpdatePiecePosition(this, oldPos, newPosition);
                 HasMoved = true;
-                
                 UpdateVisualPos();
+                OnPieceMoved?.Invoke(this);
                 return true;
+            }
+
+            if (_board.IsPositionValid(newPosition) && _board.IsPositionOccupied(newPosition))
+            {
+                IMovable enemyPiece = _board.GetPieceAtPosition(newPosition);
+                if (enemyPiece is IDamageable chessPiece)
+                {
+                    bool defeated = Attack(chessPiece, 1);
+                    if (defeated)
+                    {
+                        Vector2Int oldPos = Position;
+                        Position = newPosition;
+                        _board.UpdatePiecePosition(this, oldPos, newPosition);
+                        HasMoved = true;
+                        UpdateVisualPos();
+                        return true;
+                    }
+                    // Attack happened but didn't defeat enemy
+                    return false;
+                }
             }
             return false;
         }
@@ -70,12 +91,33 @@ namespace Chess
         public bool TakeDamage(int damageAmount)
         {
             CurrentHealth -= damageAmount;
-            if (CurrentHealth < 0)
+            // Add this detailed debug log to see which piece is taking damage
+            Debug.Log($"[COMBAT] {gameObject.name} ({ChessType}) took {damageAmount} damage! Health: {CurrentHealth}/{maxHealth}");
+            
+            if (CurrentHealth <= 0)
             {
+                Debug.Log($"[COMBAT] {gameObject.name} ({ChessType}) was defeated!");
+                _board.RemoveChessPiece(Position);
                 Die();
-                return true;
+                return true; 
             }
-            return false;
+            return false; 
+        }
+
+        private bool Attack(IDamageable target, int damage)
+        {
+            OnPieceMoved?.Invoke(this);
+            if (target is ChessPiece targetPiece)
+            {
+                Debug.Log($"[COMBAT] {gameObject.name} ({ChessType}) attacking {targetPiece.gameObject.name} ({targetPiece.ChessType}) at position {targetPiece.Position}");
+            }
+            
+            bool defeated = target?.TakeDamage(damage) ?? false;
+    
+            // Add result of attack
+            // Debug.Log($"[COMBAT] Attack result: {(defeated ? "Enemy defeated!" : "Enemy survived!")}");
+    
+            return defeated;
         }
 
         protected virtual void Die()

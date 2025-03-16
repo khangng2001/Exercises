@@ -21,14 +21,10 @@ namespace Chess
         private void Awake()
         {
             _chessBoard = FindObjectOfType<ChessBoard>();
-        }
-
-        private void Start()
-        {
             SpawnPlayerKing();
             SpawnEnemy();
         }
-
+        
         private PiecesData GetRandomPiece()
         {
             float totalWeight = 0;

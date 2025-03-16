@@ -10,7 +10,7 @@ namespace Chess.ChessStrategies
         {
             List<Vector2Int> possibleMoves = new List<Vector2Int>();
 
-            Vector2Int forwardOne = new Vector2Int(currentPosition.x + 1, currentPosition.y);
+            Vector2Int forwardOne = new Vector2Int(currentPosition.x, currentPosition.y + 1);
 
             if (board.IsPositionValid(forwardOne) && !board.IsPositionOccupied(forwardOne))
             {
